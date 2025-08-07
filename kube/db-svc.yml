@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: db-svc
 spec:
-  type: ClusterIP  # changed from NodePort
+  type: NodePort
   selector:
     app: mongo
   ports:
     - port: 27017
       targetPort: 27017
+      nodePort: 31004
