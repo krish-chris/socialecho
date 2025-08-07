@@ -20,3 +20,6 @@ spec:
         ports:
         - containerPort: 4000
           name: server
+        env:
+        - name: MONGODB_URI
+          value: "mongodb://db-svc:27017/db_socialecho"
