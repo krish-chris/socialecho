@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_USER = 'krishkumarshrestha'
+        IMAGE_CLIENT = "${DOCKERHUB_USER}/client"
+        IMAGE_SERVER = "${DOCKERHUB_USER}/server"
+    }
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/krish-chris/socialecho'
+            }
+        }
+
+        stage('Build & Push Client Image') {
+            steps {
+                dir('client') {
+                    script {
+                        docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                            def clientImage = docker.build("${IMAGE_CLIENT}:latest")
+                            clientImage.push()
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build & Push Server Image') {
+            steps {
+                dir('server') {
+                    script {
+                        docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                            def serverImage = docker.build("${IMAGE_SERVER}:latest")
+                            serverImage.push()
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Stack') {
+            steps {
+                script {
+                    sh 'docker stack deploy -c docker-compose.yml socialecho'
+                }
+            }
+        }
+    }
+}
