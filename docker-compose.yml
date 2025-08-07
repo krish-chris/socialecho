@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    deploy:
+      replicas: 3
+  backend:
+    image: krishkumarshrestha/server
+    deploy:
+      replicas: 3
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongo
+  frontend:
+    image: krishkumarshrestha/client
+    deploy:
+      replicas: 3
+    ports: 
+      - "3000:3000"
